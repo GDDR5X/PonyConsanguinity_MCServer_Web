@@ -134,6 +134,176 @@
             color: #721c24;
         }
 
+        .btn-checkin {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-checkin:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-checkin:disabled {
+            background: #ccc;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* 签到卡片新样式 */
+        .checkin-card {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(145deg, #ffffff 0%, #f0f2f5 100%);
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .checkin-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .checkin-locked-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(4px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .checkin-locked-overlay:hover {
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .lock-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1));
+        }
+
+        /* 签到成功弹窗 */
+        .checkin-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .checkin-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .checkin-modal {
+            background: white;
+            padding: 40px;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            transform: scale(0.8) translateY(20px);
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .checkin-modal-overlay.active .checkin-modal {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+
+        .checkin-modal.exiting {
+            transform: scale(0.8) translateY(-20px);
+            opacity: 0;
+        }
+
+        .checkin-success-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+            margin: 0 auto 25px;
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            animation: bounceIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0); }
+            100% { transform: scale(1); }
+        }
+
+        .checkin-points-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            background: #f0f4ff;
+            color: #667eea;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin: 15px 0;
+        }
+
+        .checkin-loader {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            margin: 20px auto;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .checkin-modal-close {
+            margin-top: 25px;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            background: #f5f5f5;
+            color: #666;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .checkin-modal-close:hover {
+            background: #eee;
+            color: #333;
+        }
+
         /* 响应式设计 */
         @media (max-width: 768px) {
             .alert-content {
@@ -756,7 +926,7 @@
                             <div class="stat-label">等级</div>
                         </div>
                         <div class="stat-box-small">
-                            <div class="stat-value">NaN</div>
+                            <div class="stat-value" id="profile-points">0</div>
                             <div class="stat-label">积分</div>
                         </div>
                     </div>
@@ -774,6 +944,7 @@
 
                 <div class="profile-tabs">
                     <button class="profile-tab active" onclick="switchProfileTab('overview')">概览</button>
+                    <button class="profile-tab" onclick="switchProfileTab('shop')">积分商城</button>
                     <button class="profile-tab" onclick="switchProfileTab('notifications')">通知</button>
                 </div>
 
@@ -821,12 +992,61 @@
                                 验证邮箱后可使用全部功能
                             </p>
                         </div>
-                        <div class="info-card">
-                            <h3>签到</h3>
-                            <div class="info-item">
-                                <span class="info-label">暂未开放</span>
+                        <div class="info-card checkin-card" id="checkin-card">
+                            <!-- 未验证提示层 -->
+                            <div id="checkin-locked" class="checkin-locked-overlay" onclick="resendVerificationEmail()" style="display: none;">
+                                <div class="lock-icon">🔒</div>
+                                <div style="font-weight: bold; color: #721c24;">签到需验证邮箱</div>
+                                <div style="font-size: 12px; color: #666; margin-top: 5px;">点击发送验证邮件</div>
                             </div>
+                            
+                            <h3>每日签到</h3>
+                            <div class="info-item">
+                                <span class="info-label">连续签到</span>
+                                <span class="info-value" id="checkin-streak">- 天</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">上次签到</span>
+                                <span class="info-value" id="checkin-last">-</span>
+                            </div>
+                            <button id="checkin-btn" class="btn btn-checkin" style="margin-top: 15px; width: 100%;">立即签到</button>
+                            <p id="checkin-message" style="text-align: center; margin-top: 10px; font-size: 14px;"></p>
                         </div>
+                    </div>
+                </div>
+
+                <!-- 积分商城 -->
+                <div id="tab-shop" class="tab-content">
+                    <div class="shop-header" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                        <div class="user-points" style="display: flex; align-items: center; gap: 15px;">
+                            <span id="user-rank-icon" class="user-points-rank-icon" style="font-size: 2rem;"></span>
+                            <div>
+                                <div style="font-size: 14px; color: #666;">您的积分</div>
+                                <span id="current-points" class="points-value" style="font-size: 24px; font-weight: bold; color: #667eea;">0</span>
+                            </div>
+                            <button class="btn btn-sm" onclick="refreshShopPoints()" title="刷新积分">🔄</button>
+                        </div>
+                        <div class="shop-filters" style="display: flex; gap: 10px;">
+                            <select id="category-filter" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 5px;">
+                                <option value="all">全部分类</option>
+                                <option value="item">游戏物品</option>
+                                <option value="privilege">特权</option>
+                                <option value="cosmetic">外观</option>
+                            </select>
+                            <select id="sort-by" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 5px;">
+                                <option value="default">默认排序</option>
+                                <option value="price-asc">价格从低到高</option>
+                                <option value="price-desc">价格从高到低</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="shop-items-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+                        <!-- 商品将通过 JavaScript 动态加载 -->
+                    </div>
+
+                    <div id="no-items-message" class="no-items-message" style="display: none; text-align: center; padding: 40px; color: #666;">
+                        <p>暂无商品可供兑换。</p>
                     </div>
                 </div>
 
@@ -1442,6 +1662,11 @@
                 if (tab === 'notifications') {
                     loadNotifications();
                 }
+
+                // 加载积分商城
+                if (tab === 'shop') {
+                    loadShopItems();
+                }
             }, 50);
         }
 
@@ -1956,6 +2181,10 @@
 
             if (currentUser && isLoggedIn) {
                 document.getElementById('profile-username').textContent = currentUser.username;
+                // 加载积分显示
+                if (currentUser.points !== undefined) {
+                    document.getElementById('profile-points').textContent = currentUser.points;
+                }
                 const roleEl = document.getElementById('profile-role');
                 roleEl.textContent = currentUser.role === 'admin' ? '管理员' : '普通用户';
                 if (currentUser.role === 'admin') {
@@ -1970,6 +2199,12 @@
 
             // 初始化邮箱验证功能
             initEmailVerification();
+
+            // 初始化签到功能
+            initCheckin();
+
+            // 初始化积分商城功能
+            initShop();
         });
 
         // 发送通知功能
@@ -2009,6 +2244,338 @@
             `;
             document.body.appendChild(modal);
         }
+
+        // 签到功能
+        function initCheckin() {
+            const token = localStorage.getItem('authToken');
+            if (!token) return;
+
+            // 首先获取签到状态
+            fetch('../api/checkin.php', {
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // 已验证邮箱，隐藏锁定层
+                    document.getElementById('checkin-locked').style.display = 'none';
+                    updateCheckinUI(data);
+                    
+                    // 初始加载时更新积分显示
+                    if (data.points !== undefined) {
+                        document.getElementById('profile-points').textContent = data.points;
+                        const storedUser = JSON.parse(localStorage.getItem('currentUser'));
+                        if (storedUser) {
+                            storedUser.points = data.points;
+                            localStorage.setItem('currentUser', JSON.stringify(storedUser));
+                        }
+                    }
+                } else {
+                    if (data.message === '请先完成邮箱验证') {
+                        // 显示锁定层
+                        document.getElementById('checkin-locked').style.display = 'flex';
+                    } else {
+                        console.error('获取签到信息失败:', data.message);
+                    }
+                }
+            });
+
+            document.getElementById('checkin-btn').addEventListener('click', () => {
+                const checkinBtn = document.getElementById('checkin-btn');
+                checkinBtn.disabled = true;
+                
+                // 显示加载弹窗
+                showCheckinModal();
+
+                fetch('../api/checkin.php', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // 模拟网络延迟以展示丝滑加载效果
+                    setTimeout(() => {
+                        if (data.success) {
+                            // 隐藏加载，显示成功内容
+                            document.getElementById('checkinModalLoading').style.display = 'none';
+                            document.getElementById('checkinModalContent').style.display = 'block';
+                            
+                            // 设置奖励内容
+                            const pointsEarned = data.points - (parseInt(document.getElementById('profile-points').textContent) || 0);
+                            document.getElementById('checkinPointsReward').textContent = `+${pointsEarned}`;
+                            document.getElementById('checkinStreakNew').textContent = data.streak;
+
+                            // 更新背景数据
+                            updateCheckinUI({
+                                already_checked_in: true,
+                                last_checkin: data.last_checkin,
+                                streak: data.streak
+                            });
+                            
+                            // 更新积分
+                            if (data.points !== undefined) {
+                                document.getElementById('profile-points').textContent = data.points;
+                                const storedUser = JSON.parse(localStorage.getItem('currentUser'));
+                                if (storedUser) {
+                                    storedUser.points = data.points;
+                                    localStorage.setItem('currentUser', JSON.stringify(storedUser));
+                                }
+                            }
+                        } else {
+                            closeCheckinModal();
+                            checkinBtn.disabled = false;
+                            alert(data.message);
+                        }
+                    }, 1200);
+                })
+                .catch(err => {
+                    closeCheckinModal();
+                    checkinBtn.disabled = false;
+                    alert('网络错误，请重试');
+                });
+            });
+        }
+
+        function showCheckinModal() {
+            const overlay = document.getElementById('checkinSuccessModal');
+            document.getElementById('checkinModalLoading').style.display = 'block';
+            document.getElementById('checkinModalContent').style.display = 'none';
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden'; // 防止背景滚动
+        }
+
+        function closeCheckinModal() {
+            const overlay = document.getElementById('checkinSuccessModal');
+            const modal = overlay.querySelector('.checkin-modal');
+            
+            modal.classList.add('exiting');
+            overlay.style.opacity = '0';
+            
+            setTimeout(() => {
+                overlay.classList.remove('active');
+                overlay.style.opacity = '';
+                modal.classList.remove('exiting');
+                document.body.style.overflow = '';
+            }, 500);
+        }
+
+        function updateCheckinUI(data) {
+            document.getElementById('checkin-streak').textContent = data.streak + ' 天';
+            document.getElementById('checkin-last').textContent = data.last_checkin ? new Date(data.last_checkin).toLocaleString() : '-';
+
+            const checkinBtn = document.getElementById('checkin-btn');
+            if (data.already_checked_in) {
+                checkinBtn.disabled = true;
+                checkinBtn.textContent = '今日已签到';
+            } else {
+                checkinBtn.disabled = false;
+                checkinBtn.textContent = '立即签到';
+            }
+        }
+
+        // 积分商城功能
+        let shopItems = [];
+        let currentUserPoints = 0;
+
+        function initShop() {
+            const categoryFilter = document.getElementById('category-filter');
+            const sortBy = document.getElementById('sort-by');
+
+            if (categoryFilter) {
+                categoryFilter.addEventListener('change', filterAndSortShopItems);
+            }
+            if (sortBy) {
+                sortBy.addEventListener('change', filterAndSortShopItems);
+            }
+
+            // 初始加载商品
+            loadShopItems();
+        }
+
+        async function loadShopItems() {
+            try {
+                const token = await getValidToken();
+                if (!token) {
+                    console.log('未登录，无法加载商品');
+                    return;
+                }
+
+                const API_BASE_URL = typeof API_CONFIG !== 'undefined' ? API_CONFIG.baseUrl : '/api';
+                const response = await fetch(`${API_BASE_URL}/shop.php`, {
+                    headers: {
+                        'Authorization': 'Bearer ' + token
+                    }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    shopItems = data.items;
+                    currentUserPoints = data.points;
+                    document.getElementById('current-points').textContent = data.points;
+                    updateShopRankIcon(data.points);
+                    renderShopItems(shopItems);
+                } else {
+                    console.error('加载商品失败:', data.message);
+                }
+            } catch (error) {
+                console.error('加载商品失败:', error);
+            }
+        }
+
+        function renderShopItems(items) {
+            const shopGrid = document.getElementById('shop-items-grid');
+            const noItemsMessage = document.getElementById('no-items-message');
+
+            if (!shopGrid) return;
+            shopGrid.innerHTML = '';
+
+            if (items.length === 0) {
+                noItemsMessage.style.display = 'block';
+                return;
+            }
+
+            noItemsMessage.style.display = 'none';
+
+            items.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'shop-item-card fade-in';
+                card.setAttribute('data-rarity', item.rarity || 'common');
+
+                const canAfford = currentUserPoints >= item.price;
+
+                card.style.cssText = `
+                    background: white;
+                    border-radius: 10px;
+                    overflow: hidden;
+                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                    transition: all 0.3s ease;
+                `;
+
+                card.innerHTML = `
+                    <div style="position: relative; overflow: hidden;">
+                        <img src="${item.image}" alt="${item.name}" style="width: 100%; height: 200px; object-fit: cover;">
+                    </div>
+                    <div style="padding: 20px;">
+                        <h3 style="margin: 0 0 10px 0; font-size: 1.2rem; color: #333;">${item.name}</h3>
+                        <p style="margin: 0 0 15px 0; color: #666; font-size: 0.9rem; min-height: 40px;">${item.description}</p>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div style="font-size: 1.5rem; font-weight: bold; color: #667eea;">${item.price}</div>
+                            <button disabled style="
+                                padding: 10px 20px;
+                                border: none;
+                                border-radius: 5px;
+                                background: #ccc;
+                                color: white;
+                                cursor: not-allowed;
+                                font-weight: bold;
+                                transition: all 0.3s ease;
+                            ">暂未开放兑换</button>
+                        </div>
+                    </div>
+                `;
+
+                shopGrid.appendChild(card);
+            });
+
+            // 添加"更多商品敬请期待"提示
+            const moreCard = document.createElement('div');
+            moreCard.style.cssText = `
+                background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                min-height: 300px;
+                border: 2px dashed #ccc;
+            `;
+            moreCard.innerHTML = `
+                <div style="font-size: 3rem; margin-bottom: 15px;">✨</div>
+                <h3 style="margin: 0 0 10px 0; font-size: 1.2rem; color: #666;">更多商品</h3>
+                <p style="margin: 0; color: #999; font-size: 0.9rem;">敬请期待</p>
+            `;
+            shopGrid.appendChild(moreCard);
+        }
+
+        function filterAndSortShopItems() {
+            let filteredItems = [...shopItems];
+
+            const category = document.getElementById('category-filter').value;
+            if (category !== 'all') {
+                filteredItems = filteredItems.filter(item => item.category === category);
+            }
+
+            const sortType = document.getElementById('sort-by').value;
+            switch (sortType) {
+                case 'price-asc':
+                    filteredItems.sort((a, b) => a.price - b.price);
+                    break;
+                case 'price-desc':
+                    filteredItems.sort((a, b) => b.price - a.price);
+                    break;
+            }
+
+            renderShopItems(filteredItems);
+        }
+
+        async function redeemShopItem(itemId) {
+            try {
+                const token = await getValidToken();
+                if (!token) {
+                    alert('请先登录');
+                    return;
+                }
+
+                const API_BASE_URL = typeof API_CONFIG !== 'undefined' ? API_CONFIG.baseUrl : '/api';
+                const response = await fetch(`${API_BASE_URL}/shop.php`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ item_id: itemId })
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    alert(data.message);
+                    currentUserPoints = data.remaining_points;
+                    document.getElementById('current-points').textContent = data.remaining_points;
+                    updateShopRankIcon(data.remaining_points);
+                    loadShopItems();
+                } else {
+                    alert(data.message);
+                }
+            } catch (error) {
+                console.error('兑换失败:', error);
+                alert('网络错误，请稍后重试');
+            }
+        }
+
+        function updateShopRankIcon(points) {
+            const rankIcon = document.getElementById('user-rank-icon');
+            if (points < 1000) {
+                rankIcon.textContent = '🥉';
+            } else if (points < 5000) {
+                rankIcon.textContent = '🥈';
+            } else if (points < 10000) {
+                rankIcon.textContent = '🥇';
+            } else {
+                rankIcon.textContent = '💎';
+            }
+        }
+
+        window.refreshShopPoints = async function() {
+            await loadShopItems();
+        }
+
+        window.redeemShopItem = redeemShopItem;
 
         async function sendNotification() {
             const title = document.getElementById('notification-title').value.trim();
@@ -2068,6 +2635,26 @@
 
     <!-- 组件加载器 -->
     <script src="../components/loader.js?v=3.0"></script>
+
+    <!-- 签到成功弹窗 -->
+    <div id="checkinSuccessModal" class="checkin-modal-overlay">
+        <div class="checkin-modal">
+            <div id="checkinModalLoading">
+                <div class="checkin-loader"></div>
+                <p>正在同步服务器数据...</p>
+            </div>
+            <div id="checkinModalContent" style="display: none;">
+                <div class="checkin-success-icon">✨</div>
+                <h2 style="color: #333; margin-bottom: 10px;">签到成功！</h2>
+                <p style="color: #666;">恭喜获得积分奖励</p>
+                <div class="checkin-points-badge" id="checkinPointsReward">+0</div>
+                <div style="margin-top: 15px; color: #888; font-size: 14px;">
+                    连续签到：<span id="checkinStreakNew" style="color: #667eea; font-weight: bold;">0</span> 天
+                </div>
+                <button class="checkin-modal-close" onclick="closeCheckinModal()">返回个人中心</button>
+            </div>
+        </div>
+    </div>
 
 </body>
 

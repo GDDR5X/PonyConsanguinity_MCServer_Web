@@ -148,11 +148,16 @@
                 </div>
             </div>
             <div style="display: flex; justify-content: center; margin-top: 30px;">
-                <div class="feature-card fade-in-delay-6" style="max-width: 300px;">
-                    <div class="feature-icon more"></div>
-                    <h3 class="feature-title">更多玩法</h3>
-                    <p class="feature-desc">更多精彩内容正在开发中，敬请期待...</p>
-                </div>
+                <a href="pages/shop.html" class="feature-card fade-in-delay-6" style="max-width: 300px; text-decoration: none; color: inherit; display: block; position: relative;">
+                    <style>
+                        .feature-card.fade-in-delay-6::after {
+                            display: none !important;
+                        }
+                    </style>
+                    <div class="feature-icon user"></div>
+                    <h3 class="feature-title">积分商城</h3>
+                    <p class="feature-desc">通过签到获取积分，兑换稀有物品和特权！</p>
+                </a>
             </div>
         </div>
     </section>

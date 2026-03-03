@@ -144,7 +144,7 @@ PC_Web/
 - **生产部署**：支持 PHP 的 Web 服务器（如 Apache、Nginx）
 - **浏览器**：现代浏览器（Chrome、Firefox、Edge 等）
 
-**注意**：请配置好php.ini，开启各种扩展，如openssl、mysqli等。你可以参考目录`config/`下的示例配置文件。
+**注意**：请配置好php.ini，开启各种扩展，如openssl、mysqli、curl、pdo_mysql等。你可以参考目录`config/`下的示例配置文件。
 
 ### 本地开发
 

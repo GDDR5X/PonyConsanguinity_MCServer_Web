@@ -118,7 +118,8 @@ $user_data = [
     'username' => $user['username'],
     'email' => $user['email'],
     'role' => $user['role'],
-    'email_verified' => !empty($user['email_verified'])
+    'email_verified' => !empty($user['email_verified']),
+    'points' => $user['points'] ?? 0
 ];
 
 // 如果启用了邮箱验证且未验证，添加提示

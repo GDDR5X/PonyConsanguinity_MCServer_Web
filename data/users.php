@@ -21,5 +21,22 @@ return array (
     'login_attempts' => 0,
     'lock_until' => NULL,
   ),
+  'cory' => 
+  array (
+    'id' => '4835bcb8-3789-44b8-8284-ec6021e86a9a',
+    'username' => 'cory',
+    'password' => '$2y$10$fz862dONY0V/RL.rwfyJpeSDTIhVb1Had9wHrEV/DngDmR5EeILo6',
+    'email' => '1257158482@qq.com',
+    'email_verified' => true,
+    'verify_token' => '43a5f7f13f7dbef46093d2ce3859ec4f0fdde9cdbb63ee680577c98b755363dd',
+    'verify_expires' => '2026-03-04 06:41:14',
+    'verify_sent_at' => '2026-03-03 06:41:14',
+    'verify_resend_count' => 3,
+    'created_at' => '2026-03-03 06:28:25',
+    'role' => 'user',
+    'login_attempts' => 0,
+    'lock_until' => NULL,
+    'points' => 40,
+  ),
 );
 ?>

@@ -40,5 +40,33 @@ return array (
     'role' => 'admin',
     'created_at' => '2026-03-01 08:06:14',
   ),
+  '00db8b57-d480-40ea-a46a-bd33ca45019b' => 
+  array (
+    'user_id' => '4835bcb8-3789-44b8-8284-ec6021e86a9a',
+    'username' => 'cory',
+    'role' => 'user',
+    'created_at' => '2026-03-03 06:28:32',
+  ),
+  '85fd41a8-5c53-41fd-baec-67899fc7b993' => 
+  array (
+    'user_id' => '4835bcb8-3789-44b8-8284-ec6021e86a9a',
+    'username' => 'cory',
+    'role' => 'user',
+    'created_at' => '2026-03-03 06:51:17',
+  ),
+  '898084d7-ab07-4d9d-b394-cb0b12514112' => 
+  array (
+    'user_id' => '4835bcb8-3789-44b8-8284-ec6021e86a9a',
+    'username' => 'cory',
+    'role' => 'user',
+    'created_at' => '2026-03-03 09:09:10',
+  ),
+  '1b50957a-bd44-4228-8235-c5243c3f1571' => 
+  array (
+    'user_id' => '4835bcb8-3789-44b8-8284-ec6021e86a9a',
+    'username' => 'cory',
+    'role' => 'user',
+    'created_at' => '2026-03-03 12:26:18',
+  ),
 );
 ?>

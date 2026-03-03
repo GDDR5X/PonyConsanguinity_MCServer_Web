@@ -38,7 +38,7 @@ try {
     echo "<h2>发送测试邮件</h2>\n";
     
     // 发送测试邮件
-    $testEmail = '2928433540@qq.com'; // 目标邮箱
+    $testEmail = '1257158482@qq.com'; // 目标邮箱
     $testUsername = 'Test User';
     
     echo "<p>正在发送测试邮件到: <strong>$testEmail</strong></p>\n";
